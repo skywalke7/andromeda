@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TestProject</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <!-- Login values -->
+    
+    <string name="adjusterNumber">Número de ajustador:</string>
+    <string name="phoneNumbre">Número de telefono</string>
+    <string name="login">Entrar</string>
+    
+    <!-- notification bar values -->
+    
+    <string name="geosii">Geosii</string>
+    <string name="started">Iniciado</string>
+    
+    <!-- alerts value -->
+    
+    <string name="invalidFieldsLogin">El número de ajustador y  teléfono no pueden ir vacios</string>
+    <string name="accept">Aceptar</string>
+    
+    <string name="unregisteredAdjuster">El ajustador no se encuentra registrado</string>
+    
+    <!-- RS values -->
+    
+    <string name="nameMethodRegisterService">registro</string>
+    <string name="urlRegisterService">http://test.bancoinbursa.com/Movil/GeoSII/Servicios.svc/</string>
+    <string name="timeOutRegisterService">30000</string>
+    
+    <!-- Toast values -->
+    
+    <string name="serverError">Error en el servidor, intente más tarde</string>
+    
+    <!-- Services names -->
+    
+    <string name="xmppService">XmppConnection</string>
+    
+    <!-- Menu values -->
+    
+    <string name="status">Cambiar estado</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="available">disponible</string>
+    <string name="occupied">ocupado</string>
+    <string name="unavailable">no disponible</string>
+
+</resources>
