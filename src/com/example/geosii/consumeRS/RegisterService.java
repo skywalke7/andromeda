@@ -1,7 +1,6 @@
 package com.example.geosii.consumeRS;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;

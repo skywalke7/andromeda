@@ -10,18 +10,20 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.example.testproject.HomeActivity;
-import com.example.testproject.MainActivity;
 import com.example.testproject.R;
 
 public class HandlerPresence {
 	
-	private NotificationCompat.Builder builder;
 	private NotificationManager manager;
 	private Context context;
 	private String TAG;
+	Resources res;
 	
 	public HandlerPresence(Context context){
 		
+		Log.i(TAG, "context ["+context+"]");
+		
+		res = context.getResources();
 		this.context = context;
 		TAG = getClass().getName();
 		
@@ -72,8 +74,8 @@ public class HandlerPresence {
 	 * */
 	
 	private void notificationBar(int icon,CharSequence status){
-		
-		Resources res = context.getResources();
+
+		Log.i(TAG, "res into notificationBar -> " + res);
 		
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
 		.setSmallIcon(icon)

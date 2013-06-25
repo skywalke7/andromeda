@@ -36,7 +36,7 @@
         <!-- Services -->
         
         <service
-            android:name="com.example.geosii.services.ConnectionXMPPService"
+            android:name="com.example.geosii.services.XMPPConnectionService"
             android:icon="@drawable/icon"
             android:label="@string/xmppService" >
         </service>

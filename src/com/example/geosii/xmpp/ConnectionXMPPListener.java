@@ -1,4 +1,4 @@
-package com.example.geosii.xmpp;
+	package com.example.geosii.xmpp;
 
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -13,15 +13,15 @@ public class ConnectionXMPPListener implements ConnectionListener{
 	
 	private HandlerPresence presence;
 	private String TAG;
-	private Context context;
 	private XMPPConnection connection;
+	private static final int timeOut = 50000;
 	
 	public ConnectionXMPPListener(Context context, XMPPConnection connection) {
 		
 		this.connection = connection;
-		this.context = context;
 		this.presence = new HandlerPresence(context);
 		TAG = getClass().getName();
+		ReconnectionXMPP.validateTimeOut(connection,timeOut);
 		
 	}
 
@@ -29,8 +29,8 @@ public class ConnectionXMPPListener implements ConnectionListener{
 	public void connectionClosed() {
 		
 		Log.i(TAG, "disconnected");
-		removeDataConnection();
 		presence.showStatusNotification(XMPPConnectionService.STATUS_OFFLINE);
+		removeDataConnection();
 		
 	}
 
@@ -38,8 +38,8 @@ public class ConnectionXMPPListener implements ConnectionListener{
 	public void connectionClosedOnError(Exception arg0) {
 		
 		Log.i(TAG, "disconnected for error");
-		removeDataConnection();
 		presence.showStatusNotification(XMPPConnectionService.STATUS_OFFLINE);
+		removeDataConnection();
 		
 	}
 
@@ -65,7 +65,8 @@ public class ConnectionXMPPListener implements ConnectionListener{
 		
 		Log.i(TAG, "removing old connection ...");
 		
-		ReconnectionXMPP.count.cancel();
+		ReconnectionXMPP.timer.cancel();
+		ReconnectionXMPP.flag = false;
 		PingPacketListener.lastSuccessfulContact = -1;
 		connection.removePacketListener(new PingPacketListener());
 		ProviderManager.getInstance().removeIQProvider("ping", "urn:xmpp:ping");
@@ -78,8 +79,9 @@ public class ConnectionXMPPListener implements ConnectionListener{
 	}
 	
 	public void reconnection(){
-			
-		new XMPPConnectionService().new StartConnectionXMPP(context).execute();
+		
+		
+		XMPPConnectionService.intentConnect();
 			
 	}
 

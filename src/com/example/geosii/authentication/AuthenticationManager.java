@@ -12,10 +12,8 @@ import com.example.testproject.HomeActivity;
 import com.example.testproject.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -112,8 +110,11 @@ public class AuthenticationManager{
 				Log.i(TAG, "User registered ... start home");
 				Log.i(TAG, "start connection xmpp ...");
 				
-				new XMPPConnectionService().new StartConnectionXMPP(context).execute();
 				context.startActivity(new Intent(context,HomeActivity.class));
+				
+				Log.i(TAG, "after startActivity");
+				
+				context.startService(new Intent(context,XMPPConnectionService.class));
 
 			}else if(codeError == 400){
 				

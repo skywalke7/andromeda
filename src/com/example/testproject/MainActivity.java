@@ -22,8 +22,8 @@ import android.widget.EditText;
 
 public class MainActivity extends Activity {
 	
-	private static String TAG;
 	static NotificationManager mNotificationManager;
+	private static String TAG;
 	
 	// Activity methods
 
