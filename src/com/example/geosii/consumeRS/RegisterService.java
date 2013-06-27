@@ -30,18 +30,16 @@ public class RegisterService {
 	 * 
 	 * @param methodName method name that will be invoked on the service
 	 * @param url an absolute URL giving the base location of the service
-	 * @param params the values passed to the service«s url
+	 * @param params the values passed to the services url
 	 * @param timeOut defined time to interrupt the call to service
 	 */
 	
-	public RegisterService(String methodName, String url, Map<String, String> params, int timeOut ){
-		
+	public RegisterService(String methodName, String url, Map<String, String> params, int timeOut ) {		
 		this.methodName = methodName;
 		this.url = url;
 		this.params = params;
 		this.timeOut = timeOut;
-		TAG = getClass().getName();
-		
+		TAG = getClass().getName();		
 	}
 	
 	/**
@@ -53,42 +51,30 @@ public class RegisterService {
 	 * @throws IOException
 	 */
 	
-	public Object consume() throws ClientProtocolException, IOException{
-		
+	public Object consume() throws ClientProtocolException, IOException {		
 		Object response = null;
 		String key;
-		
-
 		HttpParams httpParams = new BasicHttpParams();
 	    Iterator<Entry<String,String>> iteracion = params.entrySet().iterator();
         String url_rest = url + "?method=" + methodName;
 
-        while(iteracion.hasNext()){
-	        	
+        while (iteracion.hasNext()) {
         	Map.Entry<String, String> ob = (Map.Entry<String, String>)iteracion.next();
         	key = ob.getKey();
         	key = key.replaceAll(" ", "");
 	        	
-        	if(!key.equalsIgnoreCase("WSUsuario") && !key.equalsIgnoreCase("WSPassword") && !key.equalsIgnoreCase("JSONUbicacion")){
-
+        	if (!key.equalsIgnoreCase("WSUsuario") && !key.equalsIgnoreCase("WSPassword") && !key.equalsIgnoreCase("JSONUbicacion")) {
         		String text;
         		String paramss;
 	        		
-        		if(ob.getKey().equals("Texto")){
-	        			
+        		if (ob.getKey().equals("Texto")) {	        			
         			text = URLEncoder.encode(ob.getValue(),"ISO-8859-2");
-        			paramss = "&"+ob.getKey()+"="+text;
-	        			
-        		}else{
-	        			
-        			paramss = "&"+ob.getKey()+"="+ob.getValue();
-	        			
-        		}
-	        		
-        		url_rest = url_rest + paramss;
-	        				
-        	}
-	        	
+        			paramss = "&"+ob.getKey()+"="+text;	        
+        		} else {	        			
+        			paramss = "&"+ob.getKey()+"="+ob.getValue();	        			
+        		}	        		
+        		url_rest = url_rest + paramss;	       			
+        	}	        	
         }
 
         HttpGet request = new HttpGet(url_rest);
@@ -96,8 +82,7 @@ public class RegisterService {
         HttpConnectionParams.setSoTimeout(httpParams, timeOut);
         DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
         HttpResponse my_response = httpClient.execute(request);
-		response = EntityUtils.toString(my_response.getEntity());
-		
+		response = EntityUtils.toString(my_response.getEntity());		
 		Log.i(TAG, "Response: " + response);
 		return response;
 		

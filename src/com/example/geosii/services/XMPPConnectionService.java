@@ -7,6 +7,8 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.provider.ProviderManager;
 
+import com.example.geosii.files.FileTransfer;
+import com.example.geosii.util.Constants;
 import com.example.geosii.xmpp.ConnectionXMPPListener;
 import com.example.geosii.xmpp.HandlerPresence;
 import com.example.geosii.xmpp.PingPacketFilter;
@@ -20,7 +22,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class XMPPConnectionService extends Service{
+public class XMPPConnectionService extends Service {
 		
 	public static boolean reconnecting;
 	public static final int STATUS_AVAILABLE = 1;
@@ -36,115 +38,87 @@ public class XMPPConnectionService extends Service{
 	private static HandlerPresence presence;
 	private static Context context;
 	
-	public XMPPConnectionService(){
-		
-		Log.i(TAG, "class constructor");
-		
+	public XMPPConnectionService() {
+		Log.i(TAG, "class constructor");		
 		domain = "test.bancoinbursa.com";
 		port = 5222;
 		userName = "999991";
-		password = "999991";
-		
+		password = "999991";		
 	}	
 
-	public static void intentConnect(){
-
+	/**
+	 * Makes a attempt to connect to OpenFire server
+	 */
+	
+	public static void intentConnect() {
 		Log.i(TAG,"connecting ...");
 		Log.i(TAG,"connecting [domain->] " + domain);
 		Log.i(TAG,"connecting [port->] " + port);
-		Log.i(TAG,"connecting [userName->] " + userName);
+		Log.i(TAG,"connecting [userName->] " + userName);		
 		
-		initConfigurations();
+		if (config == null || connection == null) {
+			initConfigurations();
+		}
 		
 		try {
 			
 			connection.connect();
 			SASLAuthentication.supportSASLMechanism("PLAIN", 0);
-			
-			Log.i(TAG, "connected in host [host->] " + connection.getHost());
-			
+			Log.i(TAG, "connected in host [host->] " + connection.getHost());			
 			connection.login(userName, password);
-			reconnecting = false;
-			
-			Log.i(TAG, "logged in host [user->] " + connection.getUser());
-			
-			validateResult(true);
-			
-		} catch (XMPPException e) {
-			
-			Log.e(TAG, "failed to log in host [user->] " + connection.getUser());
-			
+			reconnecting = false;		
+			Log.i(TAG, "logged in host [user->] " + connection.getUser());			
+			validateResult(true);			
+		} catch (XMPPException e) {			
+			Log.e(TAG, "failed to log in host [user->] " + connection.getUser());			
 			e.printStackTrace();
 			reconnecting = false;
-			validateResult(false);
-			
-		}catch(Exception e){
-			
-			Log.e(TAG, e.toString());
-			
+			validateReconnection();			
+		} catch(Exception e) {			
+			Log.e(TAG, e.toString());			
 			e.printStackTrace();
 			reconnecting = false;
-			validateResult(false);
-			
+			validateReconnection();			
 		}
 
 	}
 
 	private static void validateResult(Boolean result) {
-		
 		presence = new HandlerPresence(context);
 		
-		if(result){
-			
-			Log.i(TAG, "connected!");
-			
-			connection.addConnectionListener(new ConnectionXMPPListener(context,connection));
+		if (result) {			
+			Log.i(TAG, "connected!");									
+			connection.addConnectionListener(new ConnectionXMPPListener(context,connection));			/* a listener to identify the possible deconnection */
+			HandlerPresence.clearNotification(Constants.ID_HANDLER_NOTIFICATION);
 			presence.showStatusNotification(STATUS_AVAILABLE);
-			connection.addPacketListener(new PingPacketListener(connection), new PingPacketFilter());
-			ProviderManager.getInstance().addIQProvider("ping", "urn:xmpp:ping", new PingProvider());
-			
-		}else{
-			
-			Log.i(TAG, "connection refused");
-			
-			presence.showStatusNotification(STATUS_OFFLINE);
-			validateReconnection();
-			
-			
-		}
-		
+			connection.addPacketListener(new PingPacketListener(connection), new PingPacketFilter());	/* a listener to receive the server ping and respond to this */
+			ProviderManager.getInstance().addIQProvider("ping", "urn:xmpp:ping", new PingProvider());			
+		} 		
 	}
 
 
-	private static void initConfigurations(){
-		
-		Log.i(TAG, "initConfigurations");
-					
+	private static void initConfigurations() {		
+		Log.i(TAG, "initConfigurations");					
 		config = new ConnectionConfiguration(domain,port);
 	    config.setDebuggerEnabled(true);
 	    config.setRosterLoadedAtLogin(false);
 	    config.setSASLAuthenticationEnabled(true);
 		connection = new XMPPConnection(config);
-		SmackConfiguration.setKeepAliveInterval(-1);
-		 	
+		SmackConfiguration.setKeepAliveInterval(-1);		 	
 	}
 	
 	/**
 	 * 
-	 * method to validate the status reconnection
-	 * 
+	 * method to validate the status reconnection 
 	 * */
 	
-	private static void validateReconnection(){
-		
-		Log.i(TAG, "there reconnection in process? ->  ... " + reconnecting);
-		
+	private static void validateReconnection() {		
+		Log.i(TAG, "there reconnection in process? ->  ... " + reconnecting);		
 		if(!reconnecting){
-			
-			ReconnectionXMPP.reconnect(connection);
-			
-		}
-		
+			HandlerPresence.clearNotification(Constants.ID_HANDLER_NOTIFICATION);
+			presence.showStatusNotification(STATUS_OFFLINE);
+			ReconnectionXMPP.reconnect(connection);			
+		}		
 	}
 
 	@Override
@@ -154,18 +128,15 @@ public class XMPPConnectionService extends Service{
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId){
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		
 		return START_STICKY;
 	}
 	
 	@Override
-	public void onCreate(){
-		
+	public void onCreate() {		
 		Log.i(TAG, "onCreate");
-
 		context = getApplicationContext();
-		intentConnect();
-		
+		intentConnect();		
 	}
 }

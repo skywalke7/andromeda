@@ -16,86 +16,54 @@ public class ReconnectionXMPP {
 	public static boolean flag;
 	private static String TAG = ReconnectionXMPP.class.getName();
 	
-	public static void reconnect(Connection connection){
-		
+	public static void reconnect(Connection connection) {		
 		Log.i(TAG, "reconnect connection object -> " + connection);
 		XMPPConnectionService.reconnecting = true;
 		
 		Thread reconnectionThread = new Thread(){
 				
 			@Override
-			public void run(){
-					
-				try {
-						
-					Thread.sleep(18000);
-					
-					Log.i(TAG, "init connection again");
-					
-					XMPPConnectionService.intentConnect();
-						
-				} catch (InterruptedException e) {
-						
+			public void run() {					
+				try {						
+					Thread.sleep(18000);					
+					Log.i(TAG, "init connection again");					
+					XMPPConnectionService.intentConnect();						
+				} catch (InterruptedException e) {						
 					e.printStackTrace();
-				}
-					
-			}
-				
+				}					
+			}				
 		};
 			
 		reconnectionThread.setName("Reconnection thread");
-		reconnectionThread.setDaemon(true);
 		reconnectionThread.start();
-
 	}
 	
-	public static void validateTimeOut(final Connection connection,final int time){
-		
-		Log.i(TAG, "validate timeOut");
-		
+	public static void validateTimeOut(final Connection connection,final int time) {		
+		Log.i(TAG, "validate timeOut");		
 		timer = new Timer();
-		
 		timer.scheduleAtFixedRate(new TimerTask() {
 			 
 			 @Override
-			 public void run(){
-				
+			 public void run() {				
 				 Log.i(TAG, "finished time! flag -> " + flag);
-
 				 Log.i(TAG, "checking last server comunication . . ." + PingPacketListener.getTimeSinceLastContact());
 					
-				 if(flag && PingPacketListener.getTimeSinceLastContact() == -1){
-					 
-					 if(connection != null){
-						 
-						 Log.i(TAG, "disconnecting");
-							
-						 connection.disconnect();
-						 
-					 }
-	 
-				 }else if(PingPacketListener.getTimeSinceLastContact() > time){
-					 
-					 Log.i(TAG, "connection lost -> " + "[" + PingPacketListener.getTimeSinceLastContact() + "]");
-					 
-					 if(connection != null){
-						 
-						 Log.i(TAG, "disconnecting");
-							
-						 connection.disconnect();
-						 
-					 }						 
-						 
-				 }else{
-					 
-					 flag = true;
-					 
-				 }
-				 
-			 }
-			 
-		 }, 0, time);
-		
+				 if (flag && PingPacketListener.getTimeSinceLastContact() == -1) {		/* no ping received from the beginning of the connection */					 
+					 if (connection != null) {						 
+						 Log.i(TAG, "disconnecting");							
+						 connection.disconnect();						 
+					 }	 
+				 } else if (PingPacketListener.getTimeSinceLastContact() > time) {		/* time away from the last server communication */					 
+					 Log.i(TAG, "connection lost -> " + "[" + PingPacketListener.getTimeSinceLastContact() + "]");					 
+					 if (connection != null) {						 
+						 Log.i(TAG, "disconnecting");							
+						 connection.disconnect();						 
+					 }						 						 
+				 } else {					 
+					 flag = true;					 
+				 }				 
+			 }			
+		 }, 0, time);		
 	}
 	
 }

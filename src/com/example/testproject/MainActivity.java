@@ -1,6 +1,7 @@
 package com.example.testproject;
 
 import com.example.geosii.authentication.AuthenticationManager;
+import com.example.geosii.util.Constants;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -22,59 +23,47 @@ import android.widget.EditText;
 
 public class MainActivity extends Activity {
 	
-	static NotificationManager mNotificationManager;
+	private static NotificationManager mNotificationManager;
 	private static String TAG;
 	
 	// Activity methods
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-	
+	protected void onCreate(Bundle savedInstanceState) {	
+		Log.i(TAG, "oncreate main activity");
 		super.onCreate(savedInstanceState);
 		TAG = this.getApplication().getClass().getName();
 		setContentView(R.layout.activity_main);
 		validateLoginForm();
-		
 	}
 
 	@Override
-	public void onPause(){
-		
+	public void onPause() {
 		super.onPause();
 		notificationBar();
-		
 	}
 	
 	@Override
-	public void onResume(){
-		
+	public void onResume() {
 		super.onResume();
 		clearNotification(1);
-		
 	}
 	
 	@Override
-	public void onDestroy(){
-		
+	public void onDestroy() {
 		super.onDestroy();
+	}	
 
-		
-	}
-	
 	// end activity methods
 	
 	/**
 	 * Method to obtain a object TelephonyManager
 	 * 
 	 * return the object TelephonyManager
-	 * 
 	 * */
 	
-	private TelephonyManager getDataPhone(){
-		
-		TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-		
-		return tm;
+	private TelephonyManager getDataPhone() {
+		return (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
 	}
 	
 	/**
@@ -82,48 +71,34 @@ public class MainActivity extends Activity {
 	 * asyncTask for to do the authentication process
 	 * */
 	
-	private void validateLoginForm(){
-		
+	private void validateLoginForm() {
 		Button login = (Button) findViewById(R.id.btnLogin);
 		login.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
-				
+			public void onClick(View v) {				
 				EditText adjuster = (EditText) findViewById(R.id.adjuster);
 				EditText phoneNumber = (EditText) findViewById(R.id.phnumber);
 				
-				if(adjuster.getText().toString().equals("") || phoneNumber.getText().toString().equals("")){
-					
+				if (adjuster.getText().toString().equals("") || phoneNumber.getText().toString().equals("")) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 					builder.setMessage(R.string.invalidFieldsLogin).setCancelable(false)
-					.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
-						
-						public void onClick(DialogInterface dialog, int id) {                  
-							
-							dialog.cancel();
-							dialog.dismiss();
-							
-						}
-						
-					});
-					
+							.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+								
+								public void onClick(DialogInterface dialog, int id) {                  
+									dialog.cancel();
+									dialog.dismiss();							
+								}
+							});					
 					AlertDialog alert = builder.create();
 					alert.show();
-					
-				}else{
-					
-					Log.i(TAG, "Invoke AuthenticationManager ...");
-					
+				} else {
+					Log.i(TAG, "Invoke AuthenticationManager ...");					
 					new AuthenticationManager(MainActivity.this).new AuthenticationUser().execute(adjuster.getText().toString(), 
-							phoneNumber.getText().toString(), getDataPhone().getDeviceId());
-					
+							phoneNumber.getText().toString(), getDataPhone().getDeviceId());		/* invoked to validate the user by passing its parameters */
 				}
-				
 			}
-			
 		});
-		
 	}
 	
 	/**
@@ -131,38 +106,33 @@ public class MainActivity extends Activity {
 	 * and the user isn't logged
 	 * */
 	
-	private void notificationBar(){
-		
-		Resources res = getResources();
-		
+	private void notificationBar() {
+		Resources res = getResources();		
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-		.setSmallIcon(R.drawable.icon_bar)
-		.setContentTitle(res.getString(R.string.geosii))
-		.setContentText(res.getString(R.string.started));
-		
+											  .setSmallIcon(R.drawable.icon_bar)
+											  .setContentTitle(res.getString(R.string.geosii))
+											  .setContentText(res.getString(R.string.started));		
 		Intent resultIntent = new Intent(this, MainActivity.class);
 		resultIntent.setAction(Intent.ACTION_MAIN);
 		resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(MainActivity.class);
 		stackBuilder.addNextIntent(resultIntent);
-		
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
-		
 		mBuilder.setContentIntent(resultPendingIntent);
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.notify(1, mBuilder.build());
-		
+		mNotificationManager.notify(Constants.ID_MAIN_NOTIFICATION, mBuilder.build());
 	}
 	
 	/**
 	 * Method to clear the object notification
 	 * */
 	
-	private void clearNotification(int id){
+	public static void clearNotification(int id) {
 		
-		if(mNotificationManager != null)
+		if (mNotificationManager != null) {
 			mNotificationManager.cancel(id);
+		}
 		
 	}
 	
